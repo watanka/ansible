@@ -1,0 +1,45 @@
+# linux 서버 환경 초기화
+# python 설치
+# docker 설치
+# nvidia gpu 사용을 위한 패키지들 설치
+  # nvidia-driver
+  # cudnn 
+  # nvidia-cuda-toolkit
+  # nvidia-container-toolkit
+
+- name: My first play
+  hosts: ocr_server
+  become: true
+  vars :
+    pin_url : "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin"
+    deb_url: 'https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-12-3_12.3.1-1_amd64.deb'
+    nvidia_docker_repo_gpg_url: "{{ nvidia_docker_repo_base_url }}/gpgkey"
+    nvidia_docker_repo_base_url: "https://nvidia.github.io/nvidia-docker"
+    ubuntu_repo_file_name: "nvidia-docker.list"
+    ubuntu_repo_file_path: "/etc/apt/sources.list.d/{{ ubuntu_repo_file_name }}"
+  vars_files:
+    - secret.yml
+
+  tasks:
+    - name : ubuntu-drivers 명령어 설치
+      shell : apt install -y ubuntu-drivers-common
+
+    - name : ubuntu driver 설치
+      shell : ubuntu-drivers autoinstall
+    - name : cudatoolkit 설치 파일 복사
+      copy : 
+        src : install_cuda_toolkit.sh
+        dest : /tmp/install_cuda_toolkit.sh
+        mode : '0755' # 실행권한
+
+
+    - name : 서버에 복사
+      copy : 
+        src : nvidia_setup.sh
+        dest : /tmp/nvidia_setup.sh
+        mode : '0755' # 실행권한
+
+    - name : script 실행
+      shell : /tmp/nvidia_setup.sh
+
+

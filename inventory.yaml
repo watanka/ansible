@@ -1,0 +1,6 @@
+myhosts:
+  hosts:
+    ocr_server:
+      ansible_host: korea@192.168.20.130
+      ansible_ssh_pass: thffntusxlaRj!
+      http_port: 22
